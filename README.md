@@ -39,23 +39,11 @@ def suggest_recipes():
     print("\n")
 
 # Step 5: Function to generate a grocery list for a specific recipe
-def generate_grocery_list(selected_recipe):
-    if selected_recipe not in recipes:
-        print("Recipe not found.")
-        return
-    
+
+def generate_grocery_list(selected_recipe, available_ingredients):
     required_ingredients = recipes[selected_recipe]
-    missing_ingredients = [item for item in required_ingredients if item not in available_ingredients]
-
-    if missing_ingredients:
-        print(f"Grocery list for {selected_recipe}:")
-        for item in missing_ingredients:
-            print(f"- {item}")
-    else:
-        print(f"All ingredients for {selected_recipe} are available!")
-
-    print("\n")
-
+    grocery_list = [item for item in required_ingredients if item not in available_ingredients]
+    return grocery_list
 # Step 6: Function to create a weekly meal plan
 def create_meal_plan():
     meal_plan = {}
