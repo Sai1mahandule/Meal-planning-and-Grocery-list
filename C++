@@ -1,1 +1,115 @@
 c++
+#include <iostream>
+#include <unordered_map>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+// User credentials storage
+std::unordered_map<std::string, std::string> userCredentials;
+
+// Ingredient storage
+std::vector<std::string> availableIngredients;
+std::unordered_map<std::string, std::vector<std::string>> recipes = {
+    {"Pasta", {"pasta", "tomato sauce", "cheese", "olive oil"}},
+    {"Salad", {"lettuce", "tomato", "cucumber", "olive oil", "lemon"}},
+    {"Omelette", {"eggs", "cheese", "milk", "salt", "pepper"}},
+    {"Grilled Cheese", {"bread", "cheese", "butter"}},
+    {"Stir-fry", {"chicken", "soy sauce", "broccoli", "carrot", "bell pepper"}}
+};
+
+// Function to convert a string to lowercase
+std::string toLower(const std::string &str) {
+    std::string lowerStr = str;
+    std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
+    return lowerStr;
+}
+
+// Function to register a new user
+void registerUser() {
+    std::string username, password;
+    std::cout << "\n--- Register ---\n";
+    std::cout << "Enter a username: ";
+    std::cin >> username;
+    if (userCredentials.find(username) != userCredentials.end()) {
+        std::cout << "Username already exists. Try a different one.\n";
+        return;
+    }
+    std::cout << "Enter a password: ";
+    std::cin >> password;
+    userCredentials[username] = password;
+    std::cout << "User registered successfully!\n";
+}
+
+// Function to log in an existing user
+bool loginUser() {
+    std::string username, password;
+    std::cout << "\n--- Login ---\n";
+    std::cout << "Enter your username: ";
+    std::cin >> username;
+    if (userCredentials.find(username) == userCredentials.end()) {
+        std::cout << "Username does not exist. Please register first.\n";
+        return false;
+    }
+    std::cout << "Enter your password: ";
+    std::cin >> password;
+    if (userCredentials[username] == password) {
+        std::cout << "Login successful!\n";
+        return true;
+    } else {
+        std::cout << "Incorrect password. Please try again.\n";
+        return false;
+    }
+}
+
+// Function to add ingredients
+void addIngredients() {
+    std::cout << "Enter the ingredients you have, separated by spaces: ";
+    std::string ingredient;
+    while (std::cin >> ingredient) {
+        availableIngredients.push_back(toLower(ingredient));
+        if (std::cin.peek() == '\n') break;
+    }
+    std::cout << "Ingredients added successfully!\n";
+}
+
+// Function to display available ingredients
+void displayIngredients() {
+    if (availableIngredients.empty()) {
+        std::cout << "No ingredients available.\n";
+    } else {
+        std::cout << "Currently available ingredients:\n";
+        for (const auto &ingredient : availableIngredients) {
+            std::cout << "- " << ingredient << "\n";
+        }
+    }
+}
+
+// Function to suggest recipes based on available ingredients
+void suggestRecipes() {
+    std::cout << "Suggested Recipes based on available ingredients:\n";
+    for (const auto &recipe : recipes) {
+        bool canMake = true;
+        for (const auto &ingredient : recipe.second) {
+            if (std::find(availableIngredients.begin(), availableIngredients.end(), ingredient) == availableIngredients.end()) {
+                canMake = false;
+                break;
+            }
+        }
+        if (canMake) {
+            std::cout << "- " << recipe.first << "\n";
+        }
+    }
+}
+
+// Function to generate grocery list for a specific recipe
+void generateGroceryList(const std::string &selectedRecipe) {
+    auto it = recipes.find(selectedRecipe);
+    if (it == recipes.end()) {
+        std::cout << "Recipe not found.\n";
+        return;
+    }
+
+    std::vector<std::string> missingIngredients;
+    for (const auto &ingredient : it->second) {
+        if (std::find(availableIngredients.begin(), availableIngredients.end(), ingredient) == availableIngredients.end
